@@ -89,7 +89,7 @@ export default function OrderForm() {
 
   useEffect(() => {
     if (session?.user?.email) {
-      setForm((f) => ({ ...f, email: session.user.email as string }));
+      setForm((f) => ({ ...f, email: session.user?.email as string }));
     }
   }, [session]);
 
