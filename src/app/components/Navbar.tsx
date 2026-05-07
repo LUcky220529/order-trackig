@@ -35,7 +35,7 @@ export default function Navbar() {
               Mercury
             </span>
             <span className="text-[#c0c8d4] text-sm block leading-none -mt-0.5 tracking-widest uppercase font-light">
-              Dry Cleaner
+              Dry Cleaners
             </span>
           </div>
         </button>
@@ -51,7 +51,7 @@ export default function Navbar() {
             <button
               key={item.id}
               onClick={() => scrollTo(item.id)}
-              className="text-[#c0c8d4] hover:text-white text-sm font-medium tracking-wide transition-colors duration-200 hover:text-[#d4af5a]"
+              className="link-sweep text-[#c0c8d4] hover:text-[#d4af5a] text-sm font-medium tracking-wide transition-colors duration-200"
             >
               {item.label}
             </button>

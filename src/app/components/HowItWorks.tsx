@@ -72,7 +72,7 @@ export default function HowItWorks() {
             <span className="text-[#0a1628] text-sm font-medium tracking-wider uppercase">Simple Process</span>
           </div>
           <h2
-            className="text-4xl md:text-5xl font-black text-[#0a1628] mb-4"
+            className="heading-underline text-4xl md:text-5xl font-black text-[#0a1628] mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             How It Works
@@ -117,15 +117,14 @@ export default function HowItWorks() {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 reveal">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 reveal">
           {[
-            { value: "5,000+", label: "Happy Customers" },
-            { value: "48hr", label: "Standard Turnaround" },
-            { value: "99.2%", label: "Satisfaction Rate" },
+            { value: "1980", label: "Operating Since" },
+            { value: "100%", label: "Satisfaction Rate" },
             { value: "24hr", label: "Express Option" },
           ].map((stat) => (
-            <div key={stat.label} className="text-center bg-white rounded-xl p-6 shadow-sm border border-[#e8edf3]">
-              <div className="text-3xl font-black text-[#b8963e] mb-1">{stat.value}</div>
+            <div key={stat.label} className="shimmer-card text-center bg-white rounded-xl p-6 shadow-sm border border-[#e8edf3]">
+              <div className="stat-pop text-3xl font-black text-[#b8963e] mb-1">{stat.value}</div>
               <div className="text-sm text-[#4a5568] font-medium">{stat.label}</div>
             </div>
           ))}

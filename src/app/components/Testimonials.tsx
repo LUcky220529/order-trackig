@@ -1,10 +1,11 @@
 "use client";
 
 const reviews = [
-  { name: "Sarah M.", role: "Regular Customer", rating: 5, text: "Mercury turned my ruined wedding dress into something pristine again. Absolute lifesavers. The express service is worth every penny!", avatar: "S" },
-  { name: "James T.", role: "Business Professional", rating: 5, text: "I send all my suits here. Turnaround is always on time and the quality is impeccable. The online booking makes it incredibly convenient.", avatar: "J" },
-  { name: "Priya K.", role: "Fashion Enthusiast", rating: 5, text: "Finally a dry cleaner that handles delicate fabrics properly. My silk sarees come back perfectly every single time. Highly recommend!", avatar: "P" },
-  { name: "David L.", role: "Hotel Manager", rating: 5, text: "We use Mercury for our staff uniforms. Professional, reliable, and the bulk pricing is excellent. Can't imagine using anyone else.", avatar: "D" },
+  { name: "Yashna Kapoor", role: "Verified Customer · 7 Reviews", rating: 5, text: "I got my sofa and curtains dry cleaned. Amazing results and no damage. Very professional team. They did it all so well and at my door step. Literally one call away before the guests come ❤️", avatar: "Y" },
+  { name: "Madhu Bhatia", role: "Verified Customer · 4 Reviews", rating: 5, text: "Excellent laundry service! Clothes came back super clean, fresh, and well-ironed. Delivery was on time and staff was very polite. Highly recommended for anyone in Mansarovar Garden.", avatar: "M" },
+  { name: "Muskan Sharma", role: "Verified Customer · 2 Reviews", rating: 5, text: "Quick service, great cleaning, and reasonable rates. Highly recommended. Good experience. Pickup and delivery smooth. Top-notch quality!", avatar: "M" },
+  { name: "Tanisha Sahlot", role: "Verified Customer · 5 Reviews", rating: 5, text: "I gave my sneakers for cleaning and honestly they look almost new now. Very professional shoe cleaning service. Totally worth it!", avatar: "T" },
+  { name: "Subhash Chand", role: "Verified Customer", rating: 5, text: "Great experience, from booking to delivery everything was smooth.", avatar: "S" },
 ];
 
 export default function Testimonials() {
@@ -16,7 +17,7 @@ export default function Testimonials() {
           <div className="inline-flex items-center gap-2 bg-[#0a1628]/5 border border-[#0a1628]/10 rounded-full px-4 py-2 mb-4">
             <span className="text-[#b8963e] text-sm font-medium tracking-wider uppercase">⭐ Customer Stories</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-[#0a1628] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h2 className="heading-underline text-4xl md:text-5xl font-black text-[#0a1628] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Trusted by Thousands
           </h2>
           <p className="text-[#4a5568] text-lg max-w-xl mx-auto">Real stories from people who trust Mercury with their wardrobe.</p>
@@ -24,7 +25,7 @@ export default function Testimonials() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {reviews.map((r) => (
-            <div key={r.name} className="card-lift bg-white rounded-2xl p-7 border border-[#e8edf3] shadow-sm">
+            <div key={r.name} className="tilt-card shimmer-card card-lift bg-white rounded-2xl p-7 border border-[#e8edf3] shadow-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0a1628] to-[#1e3a5f] flex items-center justify-center text-white font-black text-lg flex-shrink-0">
                   {r.avatar}

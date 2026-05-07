@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface OrderItem {
   type: string;
@@ -47,6 +48,14 @@ export default function AdminPage() {
   const [selected, setSelected] = useState<Order | null>(null);
   const [filter, setFilter] = useState("all");
   const [updating, setUpdating] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.push("/admin/login");
+    router.refresh();
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -70,6 +79,15 @@ export default function AdminPage() {
     setUpdating(null);
   };
 
+  const deleteOrder = async (id: string) => {
+    if (!confirm("Are you sure you want to permanently delete this order?")) return;
+    setDeleting(id);
+    await fetch(`/api/orders/${id}`, { method: "DELETE" });
+    await fetchOrders();
+    if (selected?._id === id) setSelected(null);
+    setDeleting(null);
+  };
+
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
 
   const stats = {
@@ -91,9 +109,14 @@ export default function AdminPage() {
             <p className="text-[#9aa5b4] text-xs">Order Management Dashboard</p>
           </div>
         </div>
-        <button onClick={fetchOrders} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
-          🔄 Refresh
-        </button>
+        <div className="flex items-center gap-3">
+          <button onClick={fetchOrders} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+            🔄 Refresh
+          </button>
+          <button onClick={handleLogout} className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+            Logout 🚪
+          </button>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -229,6 +252,14 @@ export default function AdminPage() {
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Delete Order */}
+                <div className="mt-6 border-t border-red-100 pt-5">
+                  <button onClick={() => deleteOrder(selected._id)} disabled={deleting === selected._id}
+                    className="w-full py-3 rounded-xl text-sm font-bold bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-all duration-300 border border-red-100 hover:border-red-500 flex items-center justify-center gap-2">
+                    {deleting === selected._id ? "Deleting..." : "🗑️ Delete Order Permanently"}
+                  </button>
                 </div>
               </div>
             ) : (

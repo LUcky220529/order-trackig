@@ -35,7 +35,7 @@ async function sendNotificationEmail(data: {
   const html = `
     <div style="font-family:'Inter',sans-serif;max-width:600px;margin:0 auto;background:#f8fafc;padding:20px;">
       <div style="background:#0a1628;border-radius:16px;padding:32px;text-align:center;margin-bottom:20px;">
-        <h1 style="color:#d4af5a;margin:0;font-size:24px;">🧺 New Order — Mercury Dry Cleaner</h1>
+        <h1 style="color:#d4af5a;margin:0;font-size:24px;">🧺 New Order — Mercury Dry Cleaners</h1>
       </div>
       <div style="background:#fff;border-radius:16px;padding:24px;margin-bottom:16px;border:1px solid #e8edf3;">
         <h2 style="color:#0a1628;margin-top:0;">Customer Details</h2>
@@ -73,7 +73,7 @@ async function sendNotificationEmail(data: {
   `;
 
   await resend.emails.send({
-    from: "Mercury Dry Cleaner <onboarding@resend.dev>",
+    from: "Mercury Dry Cleaners <onboarding@resend.dev>",
     to: process.env.ADMIN_EMAIL,
     subject: `🧺 New Order from ${data.name} — ₹${data.estimatedPrice}`,
     html,

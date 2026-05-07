@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mercury Dry Cleaner | Premium Garment Care",
+  title: "Mercury Dry Cleaners | Premium Garment Care",
   description:
     "Experience premium dry cleaning at the speed of Mercury. Schedule pickup online, get real-time delivery estimates, and enjoy spotless results.",
   keywords: "dry cleaning, laundry pickup, garment care, premium cleaning, express service",
   openGraph: {
-    title: "Mercury Dry Cleaner | Premium Garment Care",
+    title: "Mercury Dry Cleaners | Premium Garment Care",
     description: "Premium dry cleaning with doorstep pickup & delivery.",
     type: "website",
   },

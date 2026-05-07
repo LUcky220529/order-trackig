@@ -2,13 +2,23 @@
 import { useState, useCallback } from "react";
 
 const ITEM_TYPES = [
-  { label: "Shirt", baseHours: 48, pricePerUnit: 80 },
-  { label: "Trousers", baseHours: 48, pricePerUnit: 100 },
-  { label: "Suit", baseHours: 72, pricePerUnit: 350 },
-  { label: "Dress", baseHours: 72, pricePerUnit: 250 },
-  { label: "Heavy Blanket", baseHours: 72, pricePerUnit: 400 },
-  { label: "Jacket", baseHours: 72, pricePerUnit: 300 },
-  { label: "Saree / Ethnic", baseHours: 72, pricePerUnit: 450 },
+  // Men's & Ladies' Garments
+  { label: "Shirt", baseHours: 24, pricePerUnit: 150 },
+  { label: "Pant", baseHours: 24, pricePerUnit: 150 },
+  { label: "Coat", baseHours: 48, pricePerUnit: 350 },
+  { label: "Coat Pant", baseHours: 48, pricePerUnit: 500 },
+  { label: "Coat Pant & Waistcoat", baseHours: 48, pricePerUnit: 650 },
+  { label: "Ladies Suit (2-piece)", baseHours: 48, pricePerUnit: 300 },
+  { label: "Ladies Suit (3-piece)", baseHours: 48, pricePerUnit: 400 },
+  { label: "Ladies Top", baseHours: 24, pricePerUnit: 150 },
+  { label: "Ladies Kurti", baseHours: 24, pricePerUnit: 200 },
+  // Household Items
+  { label: "Bedsheet", baseHours: 48, pricePerUnit: 250 },
+  { label: "Pillow Cover", baseHours: 24, pricePerUnit: 50 },
+  { label: "Blanket (Single Bed)", baseHours: 48, pricePerUnit: 300 },
+  { label: "Blanket (Double Bed)", baseHours: 48, pricePerUnit: 400 },
+  { label: "Curtain (w/o lining)", baseHours: 48, pricePerUnit: 200 },
+  { label: "Curtain (w/ lining)", baseHours: 48, pricePerUnit: 250 },
 ];
 
 interface ClothingItem {
@@ -204,7 +214,7 @@ export default function OrderForm() {
                   <h3 className="text-xl font-bold text-[#0a1628] mb-6">Personal Information</h3>
                   <div>
                     <label className={labelCls}>Full Name</label>
-                    <input id="inp-name" type="text" placeholder="John Smith" className={inputCls} value={form.name} onChange={(e) => update("name", e.target.value)} />
+                    <input id="inp-name" type="text" placeholder="Rajesh Kumar" className={inputCls} value={form.name} onChange={(e) => update("name", e.target.value)} />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -213,7 +223,7 @@ export default function OrderForm() {
                     </div>
                     <div>
                       <label className={labelCls}>Email Address</label>
-                      <input id="inp-email" type="email" placeholder="john@example.com" className={inputCls} value={form.email} onChange={(e) => update("email", e.target.value)} />
+                      <input id="inp-email" type="email" placeholder="rajesh.kumar@gmail.com" className={inputCls} value={form.email} onChange={(e) => update("email", e.target.value)} />
                     </div>
                   </div>
                 </div>
@@ -225,16 +235,16 @@ export default function OrderForm() {
                   <h3 className="text-xl font-bold text-[#0a1628] mb-6">Pickup Address &amp; Time</h3>
                   <div>
                     <label className={labelCls}>Street Address</label>
-                    <input id="inp-address" type="text" placeholder="12, MG Road, Koramangala" className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} />
+                    <input id="inp-address" type="text" placeholder="B-12, Block B, Mansarovar Garden" className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className={labelCls}>City</label>
-                      <input id="inp-city" type="text" placeholder="Delhi" className={inputCls} value={form.city} onChange={(e) => update("city", e.target.value)} />
+                      <input id="inp-city" type="text" placeholder="West Delhi" className={inputCls} value={form.city} onChange={(e) => update("city", e.target.value)} />
                     </div>
                     <div>
                       <label className={labelCls}>Pin Code</label>
-                      <input id="inp-zip" type="text" placeholder="400001" className={inputCls} value={form.zip} onChange={(e) => update("zip", e.target.value)} />
+                      <input id="inp-zip" type="text" placeholder="110015" className={inputCls} value={form.zip} onChange={(e) => update("zip", e.target.value)} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">

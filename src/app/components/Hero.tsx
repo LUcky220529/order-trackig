@@ -96,7 +96,7 @@ export default function Hero() {
         >
           <span className="text-white">Premium Care for</span>
           <br />
-          <span className="shimmer-text">Your Wardrobe</span>
+          <span className="gradient-pulse-text">Your Wardrobe</span>
           <br />
           <span className="text-white text-4xl md:text-6xl font-bold">at the Speed of </span>
           <span className="shimmer-text text-4xl md:text-6xl">Mercury</span>
@@ -107,7 +107,9 @@ export default function Hero() {
           className="text-[#c0c8d4] text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed fade-in-up"
           style={{ animationDelay: "0.2s" }}
         >
-          Professional dry cleaning with free doorstep pickup and delivery.
+          Professional dry cleaning with{" "}
+          <span className="font-black text-[#d4af5a]">Free Doorstep Pickup &amp; Delivery</span>{" "}
+          and <span className="font-black text-[#d4af5a]">Same Day Service</span>.
           Your clothes treated with the care they deserve — returned spotless, on time.
         </p>
 
@@ -116,7 +118,7 @@ export default function Hero() {
           <button
             id="hero-book-btn"
             onClick={scrollToOrder}
-            className="group flex items-center gap-3 bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-bold px-8 py-4 rounded-full text-base shadow-2xl hover:shadow-[#b8963e]/50 hover:scale-105 transition-all duration-300"
+            className="glow-pulse group flex items-center gap-3 bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-bold px-8 py-4 rounded-full text-base shadow-2xl hover:shadow-[#b8963e]/50 hover:scale-105 transition-all duration-300"
           >
             <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -137,14 +139,14 @@ export default function Hero() {
         {/* Trust badges */}
         <div className="flex flex-wrap justify-center gap-8 mt-16 fade-in-up" style={{ animationDelay: "0.4s" }}>
           {[
-            { icon: "⚡", label: "Express 24hr Service" },
-            { icon: "🌿", label: "Eco-Friendly Solvents" },
-            { icon: "🛡️", label: "Garment Insurance" },
-            { icon: "📍", label: "Free Pickup & Delivery" },
+            { icon: "⚡", label: "Same Day Service", highlight: true },
+            { icon: "🌿", label: "Eco-Friendly Solvents", highlight: false },
+            { icon: "🛡️", label: "Garment Insurance", highlight: false },
+            { icon: "📍", label: "Free Pickup & Delivery", highlight: true },
           ].map((badge) => (
-            <div key={badge.label} className="flex items-center gap-2 text-[#c0c8d4]">
-              <span className="text-xl">{badge.icon}</span>
-              <span className="text-sm font-medium">{badge.label}</span>
+            <div key={badge.label} className={`badge-bounce flex items-center gap-2 ${badge.highlight ? "bg-[#d4af5a]/15 border border-[#d4af5a]/40 rounded-full px-4 py-1.5" : "text-[#c0c8d4]"}`}>
+              <span className="icon-spin text-xl">{badge.icon}</span>
+              <span className={`text-sm ${badge.highlight ? "font-black text-[#d4af5a]" : "font-medium text-[#c0c8d4]"}`}>{badge.label}</span>
             </div>
           ))}
         </div>
