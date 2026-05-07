@@ -1,5 +1,6 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 const ITEM_TYPES = [
   // Men's & Ladies' Garments
@@ -37,7 +38,6 @@ interface FormData {
   zip: string;
   pickupDate: string;
   pickupTime: string;
-  express: boolean;
   items: ClothingItem[];
 }
 
@@ -45,7 +45,6 @@ const initialForm: FormData = {
   name: "", phone: "", email: "",
   address: "", city: "", zip: "",
   pickupDate: "", pickupTime: "",
-  express: false,
   items: [{ id: 1, type: "Shirt", quantity: 1, instructions: "" }],
 };
 
@@ -60,11 +59,6 @@ function computeEstimate(form: FormData) {
     totalPrice += def.pricePerUnit * item.quantity;
     if (def.baseHours > maxHours) maxHours = def.baseHours;
   });
-
-  if (form.express) {
-    maxHours = Math.ceil(maxHours / 2);
-    totalPrice = Math.round(totalPrice * 1.5);
-  }
 
   let deliveryDate: Date | null = null;
   if (form.pickupDate && form.pickupTime) {
@@ -91,6 +85,13 @@ export default function OrderForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [nextId, setNextId] = useState(2);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      setForm((f) => ({ ...f, email: session.user.email as string }));
+    }
+  }, [session]);
 
   const est = computeEstimate(form);
 
@@ -148,41 +149,34 @@ export default function OrderForm() {
 
   if (submitted) {
     return (
-      <section id="order" className="py-24 bg-[#0a1628]">
-        <div className="max-w-2xl mx-auto px-6 text-center">
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-16">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#b8963e] to-[#d4af5a] flex items-center justify-center mx-auto mb-6 text-white text-4xl">✓</div>
-            <h2 className="text-3xl font-black text-white mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Booking Confirmed!</h2>
-            <p className="text-[#c0c8d4] mb-2">We&apos;ll confirm your pickup via email &amp; SMS shortly.</p>
-            {est.deliveryDate && (
-              <p className="text-[#d4af5a] font-semibold mt-4">Expected Delivery: {formatDate(est.deliveryDate)}</p>
-            )}
-            <button onClick={() => { setSubmitted(false); setForm(initialForm); setStep(0); }}
-              className="mt-8 bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-bold px-8 py-3 rounded-full hover:scale-105 transition-all duration-300">
-              Book Another Pickup
-            </button>
-          </div>
-        </div>
-      </section>
+      <div className="bg-white rounded-3xl p-16 shadow-2xl border border-[#e8edf3] text-center max-w-2xl mx-auto my-12">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#b8963e] to-[#d4af5a] flex items-center justify-center mx-auto mb-6 text-white text-4xl">✓</div>
+        <h2 className="text-3xl font-black text-[#0a1628] mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Booking Confirmed!</h2>
+        <p className="text-[#4a5568] mb-2">We'll confirm your pickup via email & SMS shortly.</p>
+        {est.deliveryDate && (
+          <p className="text-[#b8963e] font-semibold mt-4">Expected Delivery: {formatDate(est.deliveryDate)}</p>
+        )}
+        <button onClick={() => { setSubmitted(false); setForm(initialForm); setStep(0); }}
+          className="mt-8 bg-gradient-to-r from-[#0a1628] to-[#1e3a5f] text-white font-bold px-8 py-3 rounded-full hover:scale-105 transition-all duration-300">
+          Book Another Pickup
+        </button>
+      </div>
     );
   }
 
   return (
-    <section id="order" className="py-24 bg-[#0a1628] relative overflow-hidden">
-      <div className="absolute inset-0 opacity-5"
-        style={{ backgroundImage: "linear-gradient(rgba(192,200,212,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(192,200,212,0.3) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+    <div className="relative overflow-hidden w-full max-w-7xl mx-auto">
+      <div className="relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-4">
-            <div className="w-2 h-2 rounded-full bg-[#d4af5a]" />
-            <span className="text-[#d4af5a] text-sm font-medium tracking-wider uppercase">Book a Pickup</span>
+          <div className="inline-flex items-center gap-2 bg-[#d4af5a]/10 border border-[#d4af5a]/30 rounded-full px-4 py-2 mb-4">
+            <div className="w-2 h-2 rounded-full bg-[#b8963e]" />
+            <span className="text-[#b8963e] text-sm font-bold tracking-wider uppercase">Book a Pickup</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h2 className="text-4xl md:text-5xl font-black text-[#0a1628] mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Schedule Your Pickup
           </h2>
-          <p className="text-[#c0c8d4] text-lg">Takes less than 2 minutes. Free pickup, guaranteed results.</p>
+          <p className="text-[#4a5568] text-lg">Takes less than 2 minutes. Free pickup, guaranteed results.</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -223,7 +217,7 @@ export default function OrderForm() {
                     </div>
                     <div>
                       <label className={labelCls}>Email Address</label>
-                      <input id="inp-email" type="email" placeholder="rajesh.kumar@gmail.com" className={inputCls} value={form.email} onChange={(e) => update("email", e.target.value)} />
+                      <input id="inp-email" type="email" readOnly className={`${inputCls} bg-[#e8edf3] cursor-not-allowed`} value={form.email} />
                     </div>
                   </div>
                 </div>
@@ -258,20 +252,6 @@ export default function OrderForm() {
                       <label className={labelCls}>Pickup Time</label>
                       <input id="inp-time" type="time" className={inputCls} value={form.pickupTime} onChange={(e) => update("pickupTime", e.target.value)} />
                     </div>
-                  </div>
-
-                  {/* Express toggle */}
-                  <div className="flex items-center justify-between bg-gradient-to-r from-[#b8963e]/10 to-[#d4af5a]/10 border border-[#b8963e]/30 rounded-2xl p-5">
-                    <div>
-                      <p className="font-bold text-[#0a1628] text-sm">⚡ Express Service</p>
-                      <p className="text-xs text-[#4a5568] mt-0.5">Cuts turnaround in half · +50% surcharge</p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input id="toggle-express" type="checkbox" className="sr-only toggle-input" checked={form.express} onChange={(e) => update("express", e.target.checked)} />
-                      <div className={`w-14 h-7 rounded-full transition-all duration-300 flex items-center px-1 ${form.express ? "bg-gradient-to-r from-[#b8963e] to-[#d4af5a]" : "bg-[#e8edf3]"}`}>
-                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${form.express ? "translate-x-7" : "translate-x-0"}`} />
-                      </div>
-                    </label>
                   </div>
                 </div>
               )}
@@ -368,15 +348,8 @@ export default function OrderForm() {
 
           {/* Summary Sidebar */}
           <div className="lg:w-80 w-full sticky top-24">
-            <div className="bg-white/8 backdrop-blur border border-white/15 rounded-3xl p-6 text-white">
+            <div className="bg-[#0a1628] rounded-3xl p-6 text-white shadow-xl">
               <h3 className="font-bold text-lg mb-5 text-[#d4af5a]">📋 Order Summary</h3>
-
-              {/* Express badge */}
-              {form.express && (
-                <div className="flex items-center gap-2 bg-[#b8963e]/20 border border-[#b8963e]/40 rounded-xl px-3 py-2 mb-4">
-                  <span className="text-[#d4af5a] text-sm font-bold">⚡ Express Service Active</span>
-                </div>
-              )}
 
               {/* Items list */}
               <div className="space-y-2 mb-5">
@@ -396,12 +369,6 @@ export default function OrderForm() {
               </div>
 
               <div className="border-t border-white/10 pt-4 space-y-3">
-                {form.express && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[#c0c8d4]">Express surcharge (50%)</span>
-                    <span className="text-[#d4af5a]">+₹{Math.round(est.price / 3)}</span>
-                  </div>
-                )}
                 <div className="flex justify-between">
                   <span className="text-[#c0c8d4] font-semibold">Estimated Total</span>
                   <span className="text-2xl font-black text-[#d4af5a] price-update" key={est.price}>₹{est.price}</span>
@@ -418,7 +385,7 @@ export default function OrderForm() {
                 )}
                 {est.hours && (
                   <p className="text-xs text-[#b8963e] mt-1 font-medium">
-                    {form.express ? "⚡" : "🕐"} {est.hours}hr turnaround
+                    🕐 {est.hours}hr turnaround
                   </p>
                 )}
               </div>
@@ -436,6 +403,6 @@ export default function OrderForm() {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

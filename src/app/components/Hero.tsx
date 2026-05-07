@@ -53,10 +53,6 @@ export default function Hero() {
     };
   }, []);
 
-  const scrollToOrder = () => {
-    document.getElementById("order")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <section
       id="hero"
@@ -117,7 +113,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center fade-in-up" style={{ animationDelay: "0.3s" }}>
           <button
             id="hero-book-btn"
-            onClick={scrollToOrder}
+            onClick={() => window.location.href = "/login"}
             className="glow-pulse group flex items-center gap-3 bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-bold px-8 py-4 rounded-full text-base shadow-2xl hover:shadow-[#b8963e]/50 hover:scale-105 transition-all duration-300"
           >
             <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

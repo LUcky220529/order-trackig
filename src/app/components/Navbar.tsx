@@ -44,7 +44,6 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           {[
             { label: "Services", id: "how-it-works" },
-            { label: "Pricing", id: "order" },
             { label: "About", id: "testimonials" },
             { label: "Contact", id: "footer" },
           ].map((item) => (
@@ -61,8 +60,17 @@ export default function Navbar() {
         {/* CTA Button */}
         <div className="flex items-center gap-4">
           <button
+            onClick={() => {
+              window.location.href = "/login";
+            }}
+            className="hidden md:flex items-center gap-2 border border-[#d4af5a]/50 text-[#c0c8d4] font-medium px-5 py-2 rounded-full text-sm hover:border-[#d4af5a] hover:text-[#d4af5a] transition-all duration-300"
+          >
+            Track Order
+          </button>
+          
+          <button
             id="nav-book-btn"
-            onClick={() => scrollTo("order")}
+            onClick={() => window.location.href = "/login"}
             className="hidden md:flex items-center gap-2 bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-semibold px-6 py-2.5 rounded-full text-sm shadow-lg hover:shadow-[#b8963e]/40 hover:scale-105 transition-all duration-300"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +100,6 @@ export default function Navbar() {
         <div className="px-6 py-4 flex flex-col gap-4">
           {[
             { label: "Services", id: "how-it-works" },
-            { label: "Pricing", id: "order" },
             { label: "About", id: "testimonials" },
             { label: "Contact", id: "footer" },
           ].map((item) => (
@@ -105,7 +112,15 @@ export default function Navbar() {
             </button>
           ))}
           <button
-            onClick={() => scrollTo("order")}
+            onClick={() => {
+              window.location.href = "/login";
+            }}
+            className="border border-[#d4af5a]/50 text-white font-medium px-6 py-2.5 rounded-full text-sm w-full mb-2"
+          >
+            Track Order / Login
+          </button>
+          <button
+            onClick={() => window.location.href = "/login"}
             className="bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-semibold px-6 py-2.5 rounded-full text-sm w-full"
           >
             Book Pickup
