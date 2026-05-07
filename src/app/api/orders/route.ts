@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 async function sendNotificationEmail(data: {
   name: string;
@@ -19,7 +19,7 @@ async function sendNotificationEmail(data: {
   estimatedPrice: number;
   estimatedDelivery: string;
 }) {
-  if (!process.env.RESEND_API_KEY || !process.env.ADMIN_EMAIL) return;
+  if (!resend || !process.env.ADMIN_EMAIL) return;
 
   const itemsHtml = data.items
     .map(
