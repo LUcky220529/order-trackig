@@ -98,6 +98,13 @@ export default function OrderForm() {
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
+
+    if (!form.name || !form.phone || !form.email || !form.address || !form.city || !form.zip || !form.pickupDate || !form.pickupTime) {
+      setError("Please fill out all required fields before confirming.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -217,7 +224,7 @@ export default function OrderForm() {
                     </div>
                     <div>
                       <label className={labelCls}>Email Address</label>
-                      <input id="inp-email" type="email" readOnly className={`${inputCls} bg-[#e8edf3] cursor-not-allowed`} value={form.email} />
+                      <input id="inp-email" type="email" placeholder="you@example.com" className={`${inputCls} ${session?.user?.email ? "bg-[#e8edf3] cursor-not-allowed" : ""}`} value={form.email} onChange={(e) => update("email", e.target.value)} readOnly={!!session?.user?.email} />
                     </div>
                   </div>
                 </div>

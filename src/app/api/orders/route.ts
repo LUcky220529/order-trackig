@@ -19,7 +19,7 @@ async function sendNotificationEmail(data: {
   estimatedPrice: number;
   estimatedDelivery: string;
 }) {
-  if (!resend || !process.env.ADMIN_EMAIL) return;
+  if (!resend) return;
 
   const itemsHtml = data.items
     .map(
@@ -72,12 +72,29 @@ async function sendNotificationEmail(data: {
     </div>
   `;
 
-  await resend.emails.send({
+  // Send to Customer
+  const customerRes = await resend.emails.send({
     from: "Mercury Dry Cleaners <onboarding@resend.dev>",
-    to: process.env.ADMIN_EMAIL,
-    subject: `🧺 New Order from ${data.name} — ₹${data.estimatedPrice}`,
+    to: data.email,
+    subject: `🧺 Order Confirmation — ₹${data.estimatedPrice}`,
     html,
   });
+  if (customerRes.error) {
+    console.error("Failed to send customer email:", customerRes.error);
+  }
+
+  // Send to Admin
+  if (process.env.ADMIN_EMAIL) {
+    const adminRes = await resend.emails.send({
+      from: "Mercury Dry Cleaners <onboarding@resend.dev>",
+      to: process.env.ADMIN_EMAIL,
+      subject: `🧺 New Order from ${data.name} — ₹${data.estimatedPrice}`,
+      html,
+    });
+    if (adminRes.error) {
+      console.error("Failed to send admin email:", adminRes.error);
+    }
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -102,10 +119,12 @@ export async function POST(req: NextRequest) {
 
     console.log(`✅ Order saved! ID: ${order._id} | ${data.name} | ₹${data.estimatedPrice}`);
 
-    // Send email notification (non-blocking)
-    sendNotificationEmail(data).catch((e) =>
-      console.warn("⚠️ Email not sent (set RESEND_API_KEY + ADMIN_EMAIL to enable):", e.message)
-    );
+    // Send email notification before returning response so it doesn't get killed in serverless environments
+    try {
+      await sendNotificationEmail(data);
+    } catch (e: any) {
+      console.warn("⚠️ Email not sent (check RESEND_API_KEY and domain verification):", e.message);
+    }
 
     return NextResponse.json(
       { success: true, message: "Order saved!", orderId: order._id },
