@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import nodemailer from "nodemailer";
+import mongoose from "mongoose";
 
 const transporter = process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD 
   ? nodemailer.createTransport({
@@ -56,6 +57,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+       return NextResponse.json({ success: false, message: "Invalid Order ID format" }, { status: 400 });
+    }
+
     await connectDB();
     const order = await Order.findById(id).lean();
     if (!order) return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });

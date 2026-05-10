@@ -81,16 +81,11 @@ export default function OfflineBillModal({ isOpen, onClose, onSuccess }: Offline
       const data = await res.json();
       if (data.success) {
         onSuccess();
-        onClose();
+        setLastOrderId(data.orderId);
         setForm({
           name: "", phone: "", email: "", express: false,
           items: [{ id: Date.now(), type: "Shirt", quantity: 1, instructions: "" }],
         });
-        if (data.emailStatus && !data.emailStatus.customerSuccess) {
-          alert(`Order saved, but email failed: ${data.emailStatus.customerError}`);
-        } else {
-          alert("Order saved and email sent successfully!");
-        }
       } else {
         setError(data.message || "Failed to create order");
       }
@@ -100,6 +95,37 @@ export default function OfflineBillModal({ isOpen, onClose, onSuccess }: Offline
       setLoading(false);
     }
   };
+
+  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
+
+  if (lastOrderId) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 text-center">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#b8963e] to-[#d4af5a] flex items-center justify-center mx-auto mb-6 text-white text-4xl">✓</div>
+          <h2 className="text-2xl font-black text-[#0a1628] mb-2">Order Created!</h2>
+          <p className="text-[#4a5568] mb-6">The bill has been generated and the receipt was sent to the customer.</p>
+          
+          <div className="space-y-3">
+            <a
+              href={`/track/${lastOrderId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 bg-[#0a1628] text-[#d4af5a] py-3 rounded-xl font-bold hover:scale-[1.02] transition-all"
+            >
+              📦 View Tracking Page
+            </a>
+            <button
+              onClick={() => { setLastOrderId(null); onClose(); }}
+              className="w-full py-3 text-[#9aa5b4] font-bold hover:text-[#0a1628] transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">

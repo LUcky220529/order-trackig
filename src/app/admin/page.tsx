@@ -236,9 +236,21 @@ export default function AdminPage() {
                 </div>
 
                 {/* Delivery */}
-                <div className="bg-[#f8fafc] rounded-xl p-4 mb-5">
+                <div className="bg-[#f8fafc] rounded-xl p-4 mb-4">
                   <p className="text-xs font-bold text-[#9aa5b4] uppercase tracking-wider mb-1">Expected Delivery</p>
                   <p className="text-sm font-semibold text-[#0a1628]">{selected.estimatedDelivery}</p>
+                </div>
+
+                {/* Tracking Link */}
+                <div className="mb-5">
+                   <a
+                    href={`/track/${selected._id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 bg-[#d4af5a]/10 hover:bg-[#d4af5a]/20 text-[#b8963e] border border-[#d4af5a]/30 py-2.5 rounded-xl text-sm font-bold transition-all"
+                  >
+                    📦 View Customer Tracking Page
+                  </a>
                 </div>
 
                 {/* Status update */}
