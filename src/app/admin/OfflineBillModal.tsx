@@ -1,4 +1,5 @@
-import { useState } from "react";
+"use client";
+import React, { useState } from "react";
 import { ITEM_TYPES, computeEstimate, getDeliveryDate, formatDate } from "@/lib/constants";
 
 interface OfflineBillModalProps {
