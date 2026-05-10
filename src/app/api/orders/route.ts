@@ -18,8 +18,8 @@ async function sendNotificationEmail(data: {
   items: { type: string; quantity: number; instructions: string }[];
   estimatedPrice: number;
   estimatedDelivery: string;
-}) {
-  if (!resend) return;
+}): Promise<{ customerSuccess: boolean; customerError?: string; adminSuccess: boolean; adminError?: string }> {
+  if (!resend) return { customerSuccess: false, customerError: "No Resend API Key", adminSuccess: false, adminError: "No Resend API Key" };
 
   const itemsHtml = data.items
     .map(
@@ -79,11 +79,14 @@ async function sendNotificationEmail(data: {
     subject: `🧺 Order Confirmation — ₹${data.estimatedPrice}`,
     html,
   });
+  let customerErrorMsg;
   if (customerRes.error) {
     console.error("Failed to send customer email:", customerRes.error);
+    customerErrorMsg = customerRes.error.message;
   }
 
   // Send to Admin
+  let adminErrorMsg;
   if (process.env.ADMIN_EMAIL) {
     const adminRes = await resend.emails.send({
       from: "Mercury Dry Cleaners <onboarding@resend.dev>",
@@ -93,8 +96,16 @@ async function sendNotificationEmail(data: {
     });
     if (adminRes.error) {
       console.error("Failed to send admin email:", adminRes.error);
+      adminErrorMsg = adminRes.error.message;
     }
   }
+
+  return {
+    customerSuccess: !customerRes.error,
+    customerError: customerErrorMsg,
+    adminSuccess: !adminErrorMsg,
+    adminError: adminErrorMsg
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -120,14 +131,21 @@ export async function POST(req: NextRequest) {
     console.log(`✅ Order saved! ID: ${order._id} | ${data.name} | ₹${data.estimatedPrice}`);
 
     // Send email notification before returning response so it doesn't get killed in serverless environments
+    let emailStatus = { customerSuccess: false, customerError: "Not attempted" };
     try {
-      await sendNotificationEmail(data);
+      emailStatus = await sendNotificationEmail(data);
     } catch (e: any) {
       console.warn("⚠️ Email not sent (check RESEND_API_KEY and domain verification):", e.message);
+      emailStatus.customerError = e.message;
     }
 
     return NextResponse.json(
-      { success: true, message: "Order saved!", orderId: order._id },
+      { 
+        success: true, 
+        message: "Order saved!", 
+        orderId: order._id,
+        emailStatus 
+      },
       { status: 201 }
     );
   } catch (error) {

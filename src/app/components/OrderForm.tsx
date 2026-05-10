@@ -2,25 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-const ITEM_TYPES = [
-  // Men's & Ladies' Garments
-  { label: "Shirt", baseHours: 24, pricePerUnit: 150 },
-  { label: "Pant", baseHours: 24, pricePerUnit: 150 },
-  { label: "Coat", baseHours: 48, pricePerUnit: 350 },
-  { label: "Coat Pant", baseHours: 48, pricePerUnit: 500 },
-  { label: "Coat Pant & Waistcoat", baseHours: 48, pricePerUnit: 650 },
-  { label: "Ladies Suit (2-piece)", baseHours: 48, pricePerUnit: 300 },
-  { label: "Ladies Suit (3-piece)", baseHours: 48, pricePerUnit: 400 },
-  { label: "Ladies Top", baseHours: 24, pricePerUnit: 150 },
-  { label: "Ladies Kurti", baseHours: 24, pricePerUnit: 200 },
-  // Household Items
-  { label: "Bedsheet", baseHours: 48, pricePerUnit: 250 },
-  { label: "Pillow Cover", baseHours: 24, pricePerUnit: 50 },
-  { label: "Blanket (Single Bed)", baseHours: 48, pricePerUnit: 300 },
-  { label: "Blanket (Double Bed)", baseHours: 48, pricePerUnit: 400 },
-  { label: "Curtain (w/o lining)", baseHours: 48, pricePerUnit: 200 },
-  { label: "Curtain (w/ lining)", baseHours: 48, pricePerUnit: 250 },
-];
+import { ITEM_TYPES, computeEstimate, getDeliveryDate, formatDate } from "@/lib/constants";
 
 interface ClothingItem {
   id: number;
@@ -48,33 +30,7 @@ const initialForm: FormData = {
   items: [{ id: 1, type: "Shirt", quantity: 1, instructions: "" }],
 };
 
-function computeEstimate(form: FormData) {
-  if (!form.items.length) return { price: 0, deliveryDate: null };
 
-  let totalPrice = 0;
-  let maxHours = 0;
-
-  form.items.forEach((item) => {
-    const def = ITEM_TYPES.find((t) => t.label === item.type) || ITEM_TYPES[0];
-    totalPrice += def.pricePerUnit * item.quantity;
-    if (def.baseHours > maxHours) maxHours = def.baseHours;
-  });
-
-  let deliveryDate: Date | null = null;
-  if (form.pickupDate && form.pickupTime) {
-    deliveryDate = new Date(`${form.pickupDate}T${form.pickupTime}`);
-    deliveryDate.setHours(deliveryDate.getHours() + maxHours);
-  }
-
-  return { price: totalPrice, deliveryDate, hours: maxHours };
-}
-
-function formatDate(d: Date) {
-  return d.toLocaleString("en-US", {
-    weekday: "long", month: "long", day: "numeric",
-    hour: "numeric", minute: "2-digit", hour12: true,
-  });
-}
 
 const STEPS = ["Your Details", "Address & Time", "Clothing Items"];
 
@@ -93,7 +49,9 @@ export default function OrderForm() {
     }
   }, [session]);
 
-  const est = computeEstimate(form);
+  const estBase = computeEstimate(form.items);
+  const deliveryDate = getDeliveryDate(form.pickupDate, form.pickupTime, estBase.hours);
+  const est = { price: estBase.price, deliveryDate, hours: estBase.hours };
 
   const handleSubmit = async () => {
     setLoading(true);

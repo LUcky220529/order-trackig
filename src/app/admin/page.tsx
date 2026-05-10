@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import OfflineBillModal from "./OfflineBillModal";
 
 interface OrderItem {
   type: string;
@@ -49,6 +50,7 @@ export default function AdminPage() {
   const [filter, setFilter] = useState("all");
   const [updating, setUpdating] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [showOfflineModal, setShowOfflineModal] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -110,6 +112,9 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button onClick={() => setShowOfflineModal(true)} className="flex items-center gap-2 bg-[#b8963e]/20 hover:bg-[#b8963e]/40 text-[#d4af5a] border border-[#b8963e]/30 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+            📝 Offline Bill
+          </button>
           <button onClick={fetchOrders} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
             🔄 Refresh
           </button>
@@ -271,6 +276,7 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+      <OfflineBillModal isOpen={showOfflineModal} onClose={() => setShowOfflineModal(false)} onSuccess={fetchOrders} />
     </div>
   );
 }
