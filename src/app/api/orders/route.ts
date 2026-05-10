@@ -174,12 +174,14 @@ export async function POST(req: NextRequest) {
     console.log(`✅ Order saved! ID: ${order._id} | ${data.name} | ₹${data.estimatedPrice}`);
 
     // Send email notification before returning response so it doesn't get killed in serverless environments
-    let emailStatus = { customerSuccess: false, customerError: "Not attempted" };
+    let emailStatus: { customerSuccess: boolean; customerError?: string; adminSuccess?: boolean; adminError?: string } = { customerSuccess: false, customerError: "Not attempted" };
     try {
-      emailStatus = await sendNotificationEmail({ ...data, orderId: String(order._id) });
-    } catch (e: any) {
-      console.warn("⚠️ Email not sent (check GMAIL_USER and GMAIL_APP_PASSWORD):", e.message);
-      emailStatus.customerError = e.message;
+      const result = await sendNotificationEmail({ ...data, orderId: String(order._id) });
+      emailStatus = result;
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Unknown error";
+      console.warn("⚠️ Email not sent (check GMAIL_USER and GMAIL_APP_PASSWORD):", msg);
+      emailStatus.customerError = msg;
     }
 
     return NextResponse.json(
