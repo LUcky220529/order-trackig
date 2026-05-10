@@ -34,11 +34,9 @@ export default function Error({
             Go back to Dashboard
           </a>
         </div>
-        {process.env.NODE_ENV === "development" && (
-           <div className="mt-8 p-4 bg-red-50 rounded-xl text-left overflow-auto max-h-40">
-             <p className="text-xs font-mono text-red-700 whitespace-pre-wrap">{error.message}</p>
-           </div>
-        )}
+        <div className="mt-8 p-4 bg-red-50 rounded-xl text-left overflow-auto max-h-40">
+          <p className="text-xs font-mono text-red-700 whitespace-pre-wrap">Error: {error.message}</p>
+        </div>
       </div>
     </div>
   );
