@@ -18,6 +18,7 @@ export default function OfflineBillModal({ isOpen, onClose, onSuccess }: Offline
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -97,7 +98,7 @@ export default function OfflineBillModal({ isOpen, onClose, onSuccess }: Offline
     }
   };
 
-  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
+
 
   if (lastOrderId) {
     return (
