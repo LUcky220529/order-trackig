@@ -41,6 +41,7 @@ export default function OrderForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [nextId, setNextId] = useState(2);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -75,6 +76,7 @@ export default function OrderForm() {
       });
       const json = await res.json();
       if (json.success) {
+        setOrderId(json.orderId);
         setSubmitted(true);
       } else {
         setError("Something went wrong. Please try again.");
@@ -114,15 +116,25 @@ export default function OrderForm() {
 
   if (submitted) {
     return (
-      <div className="bg-white rounded-3xl p-16 shadow-2xl border border-[#e8edf3] text-center max-w-2xl mx-auto my-12">
+      <div className="bg-white rounded-3xl p-12 shadow-2xl border border-[#e8edf3] text-center max-w-2xl mx-auto my-12">
         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#b8963e] to-[#d4af5a] flex items-center justify-center mx-auto mb-6 text-white text-4xl">✓</div>
         <h2 className="text-3xl font-black text-[#0a1628] mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>Booking Confirmed!</h2>
-        <p className="text-[#4a5568] mb-2">We'll confirm your pickup via email & SMS shortly.</p>
+        <p className="text-[#4a5568] mb-2">A detailed receipt has been sent to your email.</p>
         {est.deliveryDate && (
           <p className="text-[#b8963e] font-semibold mt-4">Expected Delivery: {formatDate(est.deliveryDate)}</p>
         )}
-        <button onClick={() => { setSubmitted(false); setForm(initialForm); setStep(0); }}
-          className="mt-8 bg-gradient-to-r from-[#0a1628] to-[#1e3a5f] text-white font-bold px-8 py-3 rounded-full hover:scale-105 transition-all duration-300">
+        {orderId && (
+          <a
+            href={`/track/${orderId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 flex items-center justify-center gap-2 bg-gradient-to-r from-[#b8963e] to-[#d4af5a] text-white font-bold px-8 py-3 rounded-full hover:scale-105 transition-all duration-300 w-full"
+          >
+            📦 Track Your Order
+          </a>
+        )}
+        <button onClick={() => { setSubmitted(false); setForm(initialForm); setStep(0); setOrderId(null); }}
+          className="mt-4 text-sm text-[#9aa5b4] hover:text-[#0a1628] underline transition-colors">
           Book Another Pickup
         </button>
       </div>

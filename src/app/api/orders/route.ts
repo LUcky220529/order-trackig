@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
+import { ITEM_TYPES } from "@/lib/constants";
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const transporter = process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD 
+  ? nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    })
+  : null;
 
 async function sendNotificationEmail(data: {
   name: string;
@@ -18,19 +27,40 @@ async function sendNotificationEmail(data: {
   items: { type: string; quantity: number; instructions: string }[];
   estimatedPrice: number;
   estimatedDelivery: string;
+  orderId?: string;
 }): Promise<{ customerSuccess: boolean; customerError?: string; adminSuccess: boolean; adminError?: string }> {
-  if (!resend) return { customerSuccess: false, customerError: "No Resend API Key", adminSuccess: false, adminError: "No Resend API Key" };
+  if (!transporter) return { customerSuccess: false, customerError: "No Gmail Credentials", adminSuccess: false, adminError: "No Gmail Credentials" };
 
   const itemsHtml = data.items
-    .map(
-      (item) =>
-        `<tr>
-          <td style="padding:8px 12px;border-bottom:1px solid #e8edf3;">${item.type}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e8edf3;text-align:center;">${item.quantity}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #e8edf3;color:#9aa5b4;">${item.instructions || "—"}</td>
-        </tr>`
-    )
+    .map((item) => {
+      const def = ITEM_TYPES.find((t) => t.label === item.type) || ITEM_TYPES[0];
+      const itemTotal = def.pricePerUnit * item.quantity;
+      return `<tr>
+          <td style="padding:12px;border-bottom:1px solid #e8edf3;">
+            <p style="margin:0;font-weight:bold;color:#0a1628;">${item.type}</p>
+            ${item.instructions ? `<p style="margin:4px 0 0;font-size:12px;color:#9aa5b4;">Note: ${item.instructions}</p>` : ""}
+          </td>
+          <td style="padding:12px;border-bottom:1px solid #e8edf3;text-align:center;color:#4a5568;">₹${def.pricePerUnit} × ${item.quantity}</td>
+          <td style="padding:12px;border-bottom:1px solid #e8edf3;text-align:right;color:#0a1628;font-weight:bold;">₹${itemTotal}</td>
+        </tr>`;
+    })
     .join("");
+
+  const subtotal = data.items.reduce((sum, item) => {
+    const def = ITEM_TYPES.find((t) => t.label === item.type) || ITEM_TYPES[0];
+    return sum + (def.pricePerUnit * item.quantity);
+  }, 0);
+
+  const expressHtml = data.express ? `
+    <tr>
+      <td style="padding:12px;border-bottom:1px solid #e8edf3;">
+        <p style="margin:0;font-weight:bold;color:#b8963e;">⚡ Express Service Surcharge</p>
+        <p style="margin:4px 0 0;font-size:12px;color:#9aa5b4;">50% extra for faster delivery</p>
+      </td>
+      <td style="padding:12px;border-bottom:1px solid #e8edf3;text-align:center;color:#4a5568;">—</td>
+      <td style="padding:12px;border-bottom:1px solid #e8edf3;text-align:right;color:#b8963e;font-weight:bold;">+₹${Math.floor(subtotal * 0.5)}</td>
+    </tr>
+  ` : "";
 
   const html = `
     <div style="font-family:'Inter',sans-serif;max-width:600px;margin:0 auto;background:#f8fafc;padding:20px;">
@@ -51,12 +81,15 @@ async function sendNotificationEmail(data: {
         <table style="width:100%;border-collapse:collapse;">
           <thead>
             <tr style="background:#f8fafc;">
-              <th style="padding:8px 12px;text-align:left;font-size:12px;color:#9aa5b4;text-transform:uppercase;">Item</th>
-              <th style="padding:8px 12px;text-align:center;font-size:12px;color:#9aa5b4;text-transform:uppercase;">Qty</th>
-              <th style="padding:8px 12px;text-align:left;font-size:12px;color:#9aa5b4;text-transform:uppercase;">Notes</th>
+              <th style="padding:12px;text-align:left;font-size:12px;color:#9aa5b4;text-transform:uppercase;">Item</th>
+              <th style="padding:12px;text-align:center;font-size:12px;color:#9aa5b4;text-transform:uppercase;">Rate & Qty</th>
+              <th style="padding:12px;text-align:right;font-size:12px;color:#9aa5b4;text-transform:uppercase;">Amount</th>
             </tr>
           </thead>
-          <tbody>${itemsHtml}</tbody>
+          <tbody>
+            ${itemsHtml}
+            ${expressHtml}
+          </tbody>
         </table>
       </div>
       <div style="background:#0a1628;border-radius:16px;padding:24px;color:#fff;display:flex;justify-content:space-between;">
@@ -69,39 +102,49 @@ async function sendNotificationEmail(data: {
           <p style="color:#fff;font-size:14px;font-weight:600;margin:4px 0;">${data.estimatedDelivery}</p>
         </div>
       </div>
+      ${data.orderId ? `
+      <div style="text-align:center;margin-top:20px;">
+        <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/track/${data.orderId}"
+          style="display:inline-block;background:linear-gradient(135deg,#b8963e,#d4af5a);color:#fff;font-weight:bold;padding:14px 32px;border-radius:50px;text-decoration:none;font-size:16px;">
+          📦 Track Your Order
+        </a>
+        <p style="color:#9aa5b4;font-size:12px;margin-top:10px;">Or copy this link: ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/track/${data.orderId}</p>
+      </div>` : ""}
     </div>
   `;
 
   // Send to Customer
-  const customerRes = await resend.emails.send({
-    from: "Mercury Dry Cleaners <onboarding@resend.dev>",
-    to: data.email,
-    subject: `🧺 Order Confirmation — ₹${data.estimatedPrice}`,
-    html,
-  });
   let customerErrorMsg;
-  if (customerRes.error) {
-    console.error("Failed to send customer email:", customerRes.error);
-    customerErrorMsg = customerRes.error.message;
+  try {
+    await transporter.sendMail({
+      from: `"Mercury Dry Cleaners" <${process.env.GMAIL_USER}>`,
+      to: data.email,
+      subject: `🧺 Order Confirmation — ₹${data.estimatedPrice}`,
+      html,
+    });
+  } catch (error: any) {
+    console.error("Failed to send customer email:", error);
+    customerErrorMsg = error.message;
   }
 
   // Send to Admin
   let adminErrorMsg;
   if (process.env.ADMIN_EMAIL) {
-    const adminRes = await resend.emails.send({
-      from: "Mercury Dry Cleaners <onboarding@resend.dev>",
-      to: process.env.ADMIN_EMAIL,
-      subject: `🧺 New Order from ${data.name} — ₹${data.estimatedPrice}`,
-      html,
-    });
-    if (adminRes.error) {
-      console.error("Failed to send admin email:", adminRes.error);
-      adminErrorMsg = adminRes.error.message;
+    try {
+      await transporter.sendMail({
+        from: `"Mercury Dry Cleaners" <${process.env.GMAIL_USER}>`,
+        to: process.env.ADMIN_EMAIL,
+        subject: `🧺 New Order from ${data.name} — ₹${data.estimatedPrice}`,
+        html,
+      });
+    } catch (error: any) {
+      console.error("Failed to send admin email:", error);
+      adminErrorMsg = error.message;
     }
   }
 
   return {
-    customerSuccess: !customerRes.error,
+    customerSuccess: !customerErrorMsg,
     customerError: customerErrorMsg,
     adminSuccess: !adminErrorMsg,
     adminError: adminErrorMsg
@@ -133,9 +176,9 @@ export async function POST(req: NextRequest) {
     // Send email notification before returning response so it doesn't get killed in serverless environments
     let emailStatus = { customerSuccess: false, customerError: "Not attempted" };
     try {
-      emailStatus = await sendNotificationEmail(data);
+      emailStatus = await sendNotificationEmail({ ...data, orderId: String(order._id) });
     } catch (e: any) {
-      console.warn("⚠️ Email not sent (check RESEND_API_KEY and domain verification):", e.message);
+      console.warn("⚠️ Email not sent (check GMAIL_USER and GMAIL_APP_PASSWORD):", e.message);
       emailStatus.customerError = e.message;
     }
 

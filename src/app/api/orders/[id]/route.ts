@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD 
+  ? nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    })
+  : null;
 
 async function sendStatusUpdateEmail(order: any) {
-  if (!process.env.RESEND_API_KEY || !order.email) return;
+  if (!transporter || !order.email) return;
 
   let title = "";
   let message = "";
@@ -34,12 +42,28 @@ async function sendStatusUpdateEmail(order: any) {
     </div>
   `;
 
-  await resend.emails.send({
-    from: "Mercury Dry Cleaners <onboarding@resend.dev>",
+  await transporter.sendMail({
+    from: `"Mercury Dry Cleaners" <${process.env.GMAIL_USER}>`,
     to: order.email,
     subject: title,
     html,
   });
+}
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    await connectDB();
+    const order = await Order.findById(id).lean();
+    if (!order) return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });
+    return NextResponse.json({ success: true, order });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
 }
 
 export async function PATCH(
