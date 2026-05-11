@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌌 Mercury Dry Cleaners — Premium Care, Spotless Results
 
-## Getting Started
+A state-of-the-art, full-stack order management and tracking system built for modern dry cleaning businesses. Mercury provides a seamless experience for both customers and administrators, combining a premium aesthetic with robust functionality.
 
-First, run the development server:
+![Mercury Dashboard Preview](https://images.unsplash.com/photo-1545173153-5dd9a9602494?auto=format&fit=crop&q=80&w=1200)
 
+## ✨ Key Features
+
+### 🛍️ Customer Experience
+- **Premium Landing Page:** A visually stunning, responsive interface designed to "WOW" customers.
+- **Smart Booking System:** Multi-step booking form with real-time price estimation and delivery date calculations.
+- **Live Order Tracking:** Public-facing tracking page (`/track/[id]`) with a visual timeline of the order progress.
+- **Personalized Dashboard:** Secure Google Login for customers to view their entire order history and active requests.
+- **Automated Bills:** Professional itemized receipts sent via email immediately after booking.
+
+### 🛠️ Admin Capabilities
+- **Advanced Dashboard:** Real-time statistics on revenue, pending orders, and cleaning progress.
+- **Order Management:** Easily update order statuses (Pending → Picked Up → Cleaning → Delivered).
+- **Offline Billing System:** Create bills for walk-in customers manually, which automatically triggers tracking emails.
+- **Secure Access:** Dedicated admin login portal with protected routes.
+
+---
+
+## 🚀 Tech Stack
+
+- **Framework:** [Next.js 16 (App Router)](https://nextjs.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) with custom animations
+- **Database:** [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) with [Mongoose](https://mongoosejs.com/)
+- **Authentication:** [NextAuth.js](https://next-auth.js.org/) (Google OAuth & Credentials)
+- **Email System:** [Nodemailer](https://nodemailer.com/) with Gmail SMTP Integration
+- **Deployment:** [Vercel](https://vercel.com/)
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/LUcky220529/order-trackig.git
+cd mercury-dry-cleaner
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Environment Variables
+Create a `.env.local` file in the root directory and add the following:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Database
+MONGODB_URI=your_mongodb_uri
 
-## Learn More
+# Email (Gmail App Password)
+GMAIL_USER=your_email@gmail.com
+GMAIL_APP_PASSWORD=your_app_password
+ADMIN_EMAIL=your_notification_email@gmail.com
 
-To learn more about Next.js, take a look at the following resources:
+# Auth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Admin
+ADMIN_PASSWORD=your_admin_password
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Run Locally
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📸 Screenshots
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Customer Tracking | Admin Dashboard |
+| :--- | :--- |
+| ![Tracking](https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=400) | ![Admin](https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400) |
+
+---
+
+## 🛡️ Security
+- **Deployment Protection:** Recommended to disable Vercel Authentication in production settings for public tracking links.
+- **Middleware:** Robust route protection using Next.js `proxy.ts` to secure admin and dashboard areas.
+
+## 📄 License
+This project is for demonstration purposes for Mercury Dry Cleaners.
+
+---
+*Built with ❤️ by Antigravity*
