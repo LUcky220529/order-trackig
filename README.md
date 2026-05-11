@@ -81,5 +81,3 @@ npm run dev
 ## 📄 License
 This project is for demonstration purposes for Mercury Dry Cleaners.
 
----
-*Built with ❤️ by Antigravity*
