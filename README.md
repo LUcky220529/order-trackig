@@ -74,14 +74,6 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
-
-| Customer Tracking | Admin Dashboard |
-| :--- | :--- |
-| ![Tracking](https://images.unsplash.com/photo-1566576721346-d4a3b4eaad5b?auto=format&fit=crop&q=80&w=400) | ![Admin](https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400) |
-
----
-
 ## 🛡️ Security
 - **Deployment Protection:** Recommended to disable Vercel Authentication in production settings for public tracking links.
 - **Middleware:** Robust route protection using Next.js `proxy.ts` to secure admin and dashboard areas.
