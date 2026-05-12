@@ -12,6 +12,11 @@ export const metadata: Metadata = {
     description: "Premium dry cleaning with doorstep pickup & delivery.",
     type: "website",
   },
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
